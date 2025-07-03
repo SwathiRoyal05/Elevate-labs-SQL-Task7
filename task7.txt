@@ -1,0 +1,58 @@
+mysql> create database task7;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> use task7;
+Database changed
+mysql> CREATE TABLE Customers (
+    ->     customer_id INT PRIMARY KEY,
+    ->     name VARCHAR(100),
+    ->     city VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> CREATE TABLE Orders (
+    ->     order_id INT PRIMARY KEY,
+    ->     customer_id INT,
+    ->     amount DECIMAL(10,2),
+    ->     order_date DATE,
+    ->     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+    -> );
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> INSERT INTO Customers VALUES (1, 'Alice', 'Mumbai'), (2, 'Bob', 'Delhi'), (3, 'Charlie', 'Bangalore');
+Query OK, 3 rows affected (0.04 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> INSERT INTO Orders VALUES
+    -> (101, 1, 2500.00, '2024-06-15'),
+    -> (102, 1, 4500.00, '2024-06-16'),
+    -> (103, 2, 1500.00, '2024-06-17');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> CREATE VIEW CustomerOrders AS
+    -> SELECT c.customer_id, c.name, o.order_id, o.amount
+    -> FROM Customers c
+    -> JOIN Orders o ON c.customer_id = o.customer_id;
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> SELECT * FROM CustomerOrders WHERE amount > 2000;
++-------------+-------+----------+---------+
+| customer_id | name  | order_id | amount  |
++-------------+-------+----------+---------+
+|           1 | Alice |      101 | 2500.00 |
+|           1 | Alice |      102 | 4500.00 |
++-------------+-------+----------+---------+
+2 rows in set (0.01 sec)
+
+mysql> CREATE VIEW DelhiCustomers AS
+    -> SELECT * FROM Customers WHERE city = 'Delhi'
+    -> WITH CHECK OPTION;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> INSERT INTO DelhiCustomers VALUES (4, 'David', 'Delhi');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> DROP VIEW IF EXISTS CustomerOrders;
+Query OK, 0 rows affected (0.05 sec)
